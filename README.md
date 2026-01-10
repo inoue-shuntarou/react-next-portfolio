@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![nextjs-microcms-book](https://github.com/nextjs-microcms-book/nextjs-website-sample/assets/4659294/eea23868-1c43-4833-9cd8-97e4298ff3e4)
 
-## Getting Started
+「[Next.js+ヘッドレス CMS ではじめる！ かんたんモダン Web サイト制作入門](https://www.amazon.co.jp/dp/4798183660/)」のサンプルリポジトリです。
 
-First, run the development server:
+## 本書の動作環境
+
+OS は Windows、Mac ともに対応していますが、それぞれ本書において動作確認を行なったバージョンは次の通りです。
+
+- Windows：Windows 11 Pro
+- Mac：Ventura 13.2
+
+また、本書でコーポレートサイト制作を行うための動作環境は以下の通りです。
+
+- Node.js v20.13.1
+- Next.js v14.1.4
+
+## ディレクトリ構成
+
+### app ディレクトリ
+
+このディレクトリは、アプリケーションの主要な機能やロジックを含む部分をまとめたものです。
+
+- \_actions：Next.js の ServerActions 処理を格納します。本書においては、お問い合わせの送信処理が記述されています。
+- \_components：再利用可能な React コンポーネントを格納します。UI の構築に使用される小さな部品がここに含まれます。
+- \_constants：定数を格納します。本書では各ページのデータ取得件数が定義されています。
+- \_libs：共通のユーティリティ関数やライブラリを格納します。これにはデータフォーマット関数や API 呼び出しのヘルパー関数などが含まれます。
+- contact：お問い合わせページに関するビューやロジックが格納されています。
+- members：メンバーページに関するビューやロジックが格納されています。
+- news：ニュースページに関するビューやロジックが格納されています。
+
+### contents ディレクトリ
+
+このディレクトリは、ニュースとして CMS にインポートするためのコンテンツを格納しています。
+
+### public ディレクトリ
+
+このディレクトリは、静的ファイル（画像、フォント、その他のアセット）を格納します。
+Next.js では、このディレクトリ内のファイルは URL パスで直接アクセス可能です。
+
+## 開発環境の立ち上げ方法
+
+1. 依存パッケージのインストール
+
+```bash
+npm install
+```
+
+上記コマンドで`package.json`内に記載されている依存パッケージがインストールされます。
+
+2. 環境変数の準備
+   ご自身の microCMS 環境と接続を行うために環境変数の設定が必要です。
+   設定方法につきましては、本書の 5-3-1「事前準備をしよう」内に記載されている「環境変数の設定」をご参照ください。
+
+3. 開発環境を起動する
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+コマンドラインにて上記コマンドを入力後、[http://localhost:3000](http://localhost:3000)にアクセスします。
