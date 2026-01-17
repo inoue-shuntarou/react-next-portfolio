@@ -16,7 +16,7 @@ export type Category = {
   name: string;
 } & MicroCMSListContent;
 
-export type News = {
+export type SelfIntroduction = {
   title: string;
   description: string;
   content: string;
@@ -44,22 +44,33 @@ export const getMembersList = async (queries?: MicroCMSQueries) => {
   if (!client) {
     return { contents: [], totalCount: 0, offset: 0, limit: queries?.limit ?? 10 };
   }
-  const listData = await client.getList<Member>({
-    endpoint: 'members',
-    queries,
-  });
-  return listData;
+  try {
+    const listData = await client.getList<SelfIntroduction>({
+      endpoint: 'selfindaction',
+      queries,
+    });
+    return listData;
+  } catch (err) {
+    console.warn('[microcms] getMembersList failed:', err);
+    // 404や一時的な失敗時は空データでフォールバック
+    return { contents: [], totalCount: 0, offset: 0, limit: queries?.limit ?? 10 };
+  }
 };
 
 export const getNewsList = async (queries?: MicroCMSQueries) => {
   if (!client) {
     return { contents: [], totalCount: 0, offset: 0, limit: queries?.limit ?? 10 };
   }
-  const listData = await client.getList<News>({
-    endpoint: 'news',
-    queries,
-  });
-  return listData;
+  try {
+    const listData = await client.getList<News>({
+      endpoint: 'news',
+      queries,
+    });
+    return listData;
+  } catch (err) {
+    console.warn('[microcms] getNewsList failed:', err);
+    return { contents: [], totalCount: 0, offset: 0, limit: queries?.limit ?? 10 };
+  }
 };
 
 export const getNewsDetail = async (
@@ -69,18 +80,23 @@ export const getNewsDetail = async (
   if (!client) {
     return Promise.reject(new Error('[microcms] getNewsDetail is unavailable without env.'));
   }
-  const detailData = await client.getListDetail<News>({
-    endpoint: 'news',
-    contentId,
-    queries,
-    customRequestInit: {
-      next: {
-        revalidate: queries?.draftKey === undefined ? 60 : 0,
+  try {
+    const detailData = await client.getListDetail<News>({
+      endpoint: 'news',
+      contentId,
+      queries,
+      customRequestInit: {
+        next: {
+          revalidate: queries?.draftKey === undefined ? 60 : 0,
+        },
       },
-    },
-  });
+    });
 
-  return detailData;
+    return detailData;
+  } catch (err) {
+    // 詳細は404をページ側でnot-foundにできるようそのまま伝搬
+    throw err;
+  }
 };
 
 export const getCategoryDetail = async (
@@ -90,33 +106,48 @@ export const getCategoryDetail = async (
   if (!client) {
     return Promise.reject(new Error('[microcms] getCategoryDetail is unavailable without env.'));
   }
-  const detailData = await client.getListDetail<Category>({
-    endpoint: 'categories',
-    contentId,
-    queries,
-  });
+  try {
+    const detailData = await client.getListDetail<Category>({
+      endpoint: 'categories',
+      contentId,
+      queries,
+    });
 
-  return detailData;
+    return detailData;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const getAllNewsList = async () => {
   if (!client) {
     return [];
   }
-  const listData = await client.getAllContents<News>({
-    endpoint: 'news',
-  });
- 
-  return listData;
+  try {
+    const listData = await client.getAllContents<News>({
+      endpoint: 'news',
+    });
+  
+    return listData;
+  } catch (err) {
+    console.warn('[microcms] getAllNewsList failed:', err);
+    return [];
+  }
 };
 
 export const getAllCategoryList = async () => {
   if (!client) {
     return [];
   }
-  const listData = await client.getAllContents<Category>({
-    endpoint: 'categories',
-  });
- 
-  return listData;
+  try {
+    const listData = await client.getAllContents<Category>({
+      endpoint: 'categories',
+    });
+  
+    return listData;
+  } catch (err) {
+    console.warn('[microcms] getAllCategoryList failed:', err);
+    return [];
+  }
 };
+　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　

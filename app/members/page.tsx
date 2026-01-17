@@ -8,22 +8,22 @@ export default async function Page() {
   return (
     <div className={styles.container}>
       {data.contents.length === 0 ? (
-        <p className={styles.empty}>メンバーが登録されていません。</p>
+        <p className={styles.empty}>自己紹介が登録されていません。</p>
       ) : (
         <ul>
-          {data.contents.map((member) => (
-            <li key={member.id} className={styles.list}>
+          {data.contents.map((item) => (
+            <li key={item.id} className={styles.list}>
               <Image
-                src={member.image.url}
+                src={item.thumbnail?.url ?? '/no-image.png'}
                 alt=""
-                width={member.image.width}
-                height={member.image.height}
+                width={item.thumbnail?.width ?? 1200}
+                height={item.thumbnail?.height ?? 630}
                 className={styles.image}
               />
               <dl>
-                <dt className={styles.name}>{member.name}</dt>
-                <dd className={styles.position}>{member.position}</dd>
-                <dd className={styles.profile}>{member.profile}</dd>
+                <dt className={styles.name}>{item.title}</dt>
+                <dd className={styles.position}>{item.description}</dd>
+                <dd className={styles.profile}>{item.content}</dd>
               </dl>
             </li>
           ))}
